@@ -1,17 +1,27 @@
 class Point {
     public int x;
     public int y;
+    public int weight;
     public color _color;
 
-    Point(int x, int y, color _color) {
+    Point(int x, int y, color _color, int weight) {
         this.x = x;
         this.y = y;
         this._color = _color;
+        this.weight = weight;
     }
 }
 
 static final int XSIZE = 640;
 static final int YSIZE = 360;
+
+//Gives each point a weighting value, which the calculated distance is divided by.  
+//Creates interesting curving graphs!
+static final boolean WEIGHTING_ENABLED = false;
+
+//Number of distinct weights
+static final int WEIGHTING_GROUPS = 5;
+
 ArrayList < Point > points;
 boolean redraw = false;
 
@@ -29,7 +39,7 @@ void draw() {
                 color fillcolor = color(0);
 
                 for (Point point: points) {
-                    float dist = getDistance(x, y, point.x, point.y);
+                    float dist = getDistance(x, y, point.x, point.y) / point.weight;
 
                     if (dist < min) {
                         min = dist;
@@ -43,7 +53,7 @@ void draw() {
 
         fill(0);
         for (Point point: points) {
-            ellipse(point.x, point.y, 5, 5);
+            ellipse(point.x, point.y, point.weight*2, point.weight*2);
         }
 
         redraw = false;
@@ -51,7 +61,10 @@ void draw() {
 }
 
 void mouseClicked() {
-    points.add(new Point(mouseX, mouseY, color(random(255), random(255), random(255))));
+    points.add(new Point(mouseX, mouseY, 
+        color(random(255), random(255), random(255)),
+        ( WEIGHTING_ENABLED ? (int)random(1, WEIGHTING_GROUPS) : 1 )));
+        
     redraw = true;
 }
 
